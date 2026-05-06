@@ -1,34 +1,38 @@
 from flask import Flask, render_template, request
+import pickle
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 app = Flask(__name__)
 
-positive_words = ["good", "great", "amazing", "love", "excellent", "best"]
-negative_words = ["bad", "worst", "hate", "terrible", "awful"]
+model = load_model("sentiment_model.h5")
+
+with open("tokenizer.pkl", "rb") as f:
+    tokenizer = pickle.load(f)
+
+MAX_LEN = 100
 
 def predict_sentiment(text):
     text = text.lower()
-    
-    score = 0
-    
-    for word in positive_words:
-        if word in text:
-            score += 1
-            
-    for word in negative_words:
-        if word in text:
-            score -= 1
 
-    if score >= 0:
-        return "Positive review 😊"
+    sequence = tokenizer.texts_to_sequences([text])
+    padded = pad_sequences(sequence, maxlen=MAX_LEN)
+
+    prediction = model.predict(padded)[0][0]
+
+    if prediction >= 0.5:
+        return f"Positive review 😊 (Confidence: {prediction:.2f})"
     else:
-        return "Negative review 😡"
+        return f"Negative review 😡 (Confidence: {1 - prediction:.2f})"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = ""
+
     if request.method == "POST":
         text = request.form["review"]
         result = predict_sentiment(text)
+
     return render_template("index.html", result=result)
 
 if __name__ == "__main__":

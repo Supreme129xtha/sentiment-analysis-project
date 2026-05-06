@@ -2,16 +2,71 @@
 <html>
 <head>
     <title>Sentiment Analysis</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            padding-top: 50px;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .confidence {
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
 </head>
+
 <body>
+
     <h1>Sentiment Analysis App</h1>
 
     <form method="POST">
-        <input type="text" name="review" placeholder="Enter your review">
+        <input type="text" name="review" placeholder="Enter your review" required>
         <button type="submit">Analyze</button>
     </form>
 
-    <h2>{{ result }}</h2>
+    {% if result %}
+        <div class="result">
+            {{ result.split('(')[0] }}
+        </div>
+        <div class="confidence">
+            ({{ result.split('(')[1] }}
+        </div>
+    {% endif %}
 
 </body>
-</html>
+</html>'
